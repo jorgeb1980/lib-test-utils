@@ -16,6 +16,8 @@ public class Sandbox {
     private final static AtomicInteger testCounter = new AtomicInteger(1);
     final File sandbox = createTempDirectory();
 
+    public File getSandbox() { return sandbox; }
+
     private Sandbox() {
     }
 
