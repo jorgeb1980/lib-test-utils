@@ -139,6 +139,11 @@ public class Sandbox {
         return copyResource(resourcePath, null);
     }
 
+    // Makes it sure a string used to find a resource in the classpath starts with '/'
+    private String validateClasspathPath(String path) {
+        return path.startsWith("/") ? path : "/" + path;
+    }
+
     /**
      * Copies bit to bit some resource from the classpath into the sandboxed directory
      * @param resourcePath Valid classloader path to an existing resource in the classpath (e.g., something in the
@@ -151,7 +156,7 @@ public class Sandbox {
         File toFile = new File(sandbox, newPath != null ? extractPath(newPath) : extractPath(resourcePath));
         assertFalse(toFile.exists());
         if (!toFile.getParentFile().equals(sandbox)) toFile.getParentFile().mkdirs();
-        try (var is = Sandbox.class.getResourceAsStream(resourcePath)) {
+        try (var is = Sandbox.class.getResourceAsStream(validateClasspathPath(resourcePath))) {
             assertNotNull(is);
             Files.copy(is, toFile.toPath());
         } catch (IOException ioe) { fail(ioe); }
