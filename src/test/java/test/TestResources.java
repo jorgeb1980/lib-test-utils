@@ -22,6 +22,16 @@ public class TestResources {
     }
 
     @Test
+    public void testCopyResourceWithoutSlash() {
+        var sb = sandbox();
+        sb.runTest((File sandbox) -> {
+            var resource = sb.copyResource("testResource.txt");
+            assertEquals(sandbox, resource.getParentFile());
+            assertEquals("testResource", Files.readString(resource.toPath()));
+        });
+    }
+
+    @Test
     public void testCopyResourcesWithHierarchy() {
         var sb = sandbox();
         sb.runTest((File sandbox) -> {
