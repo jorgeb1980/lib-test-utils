@@ -3,10 +3,17 @@ package test;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestSandbox {
 
@@ -114,5 +121,24 @@ public class TestSandbox {
         assertEquals(42, ctx.result());
         assertNull(ctx.out());
         assertNull(ctx.err());
+    }
+
+    @Test
+    public void testCreateResource() {
+        var sandbox = Sandbox.sandbox();
+        sandbox.runTest(
+            (File directory) -> {
+                final var PATH = "some/file";
+                final var TEXT = "some file";
+                for (var cs: List.of(ISO_8859_1, UTF_8, US_ASCII)) {
+                    var subFile = sandbox.createResource(PATH + cs.name(), TEXT, cs);
+                    try {
+                        assertEquals(TEXT, Files.readString(subFile.toPath(), cs));
+                    } catch (IOException e) {
+                        fail(e);
+                    }
+                }
+            }
+        );
     }
 }

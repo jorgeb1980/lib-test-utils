@@ -1,7 +1,9 @@
 package test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -106,15 +108,19 @@ public class Sandbox {
             else ret = new ExecutionContext(action.run(sandbox), null, null);
         } catch (Exception e) { fail(e); }
         finally {
-            try {
-                // Delete recursively
-                if (sandbox != null) removeDirectory(sandbox);
-            } catch (IOException ioe) {
-                // Fail too if cleanup was not possible for whatever reason
-                fail(ioe);
-            }
+            cleanup();
         }
         return ret;
+    }
+
+    public void cleanup() {
+        try {
+            // Delete recursively
+            if (sandbox != null) removeDirectory(sandbox);
+        } catch (IOException ioe) {
+            // Fail too if cleanup was not possible for whatever reason
+            fail(ioe);
+        }
     }
 
     // Converts a classpath string into a string that will be used to create a children file inside the sandbox
@@ -163,5 +169,18 @@ public class Sandbox {
         return toFile;
     }
 
+    public File createResource(String path, String content, Charset encoding) {
+        if (path == null || content == null || encoding == null) throw new NullPointerException();
+        return createResource(path, content.getBytes(encoding));
+    }
 
+    public File createResource(String path, byte[] content) {
+        if (path == null || content == null) throw new NullPointerException();
+        File toFile = new File(sandbox, extractPath(path));
+        try (var bais = new ByteArrayInputStream(content)) {
+            toFile.getParentFile().mkdirs();
+            Files.copy(bais, toFile.toPath());
+        } catch (IOException ioe) { fail(ioe); }
+        return toFile;
+    }
 }
