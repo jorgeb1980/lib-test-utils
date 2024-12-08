@@ -118,7 +118,6 @@ public class Sandbox {
             // Delete recursively
             removeDirectory(sandbox);
         } catch (IOException ioe) {
-            ioe.printStackTrace();
             // Fail too if cleanup was not possible for whatever reason
             fail(ioe);
         }
