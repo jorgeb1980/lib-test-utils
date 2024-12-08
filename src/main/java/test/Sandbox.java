@@ -116,8 +116,9 @@ public class Sandbox {
     public void cleanup() {
         try {
             // Delete recursively
-            if (sandbox != null) removeDirectory(sandbox);
+            removeDirectory(sandbox);
         } catch (IOException ioe) {
+            ioe.printStackTrace();
             // Fail too if cleanup was not possible for whatever reason
             fail(ioe);
         }
