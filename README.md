@@ -49,7 +49,7 @@ same functionality.
 @EnumSource(SomeEnum.class)
 public void testForEnum(SomeEnum testParam) {
     var sb = Sandbox.sandbox();
-    sb.runTest(File directory ->{
+    sb.runTest((File directory) -> {
         // Bring src/test/resources/someDir/someFile.txt to the sandbox
         File someFile = sb.copyResource("someDir/someFile.txt");
         // Bring it again, with another name and path
